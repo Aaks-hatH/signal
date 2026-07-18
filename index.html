@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Help Us Build the Next Useful Tool</title>
 <meta name="description" content="A public signal intake — tell us what software or website should be built next.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJkZDRmZiIgc3RvcC1vcGFjaXR5PSIwLjMwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzdjNmNmZiIgc3RvcC1vcGFjaXR5PSIwLjIwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNiIgZmlsbD0iIzBjMTExYiIvPgogIDxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHJlY3QgeD0iMS41IiB5PSIxLjUiIHdpZHRoPSI2MSIgaGVpZ2h0PSI2MSIgcng9IjE0LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjE4KSIvPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1LDE1KSBzY2FsZSgxLjQpIiBmaWxsPSJub25lIiBzdHJva2U9IiMyZGQ0ZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDxwYXRoIGQ9Ik00IDEwYTggOCAwIDAgMSA4LThtMCA4TDQgMThtOC04IDggOE0yIDIyYzMtMyA1LTMgNS02YTUgNSAwIDAgMC01LTVjLTMgMC0zIDItMyAzbTE3LTlhMiAyIDAgMSAxLTQgMCAyIDIgMCAwIDEgNCAwWiIvPgogIDwvZz4KPC9zdmc+Cg==">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -150,6 +151,20 @@ button{font-family:inherit;}
 }
 .brand-word{font-family:var(--font-mono); font-size:13px; letter-spacing:0.16em; color:var(--ink-muted);}
 .brand-word span{color:var(--ink); display:block; font-size:13px; letter-spacing:0.16em;}
+.nav-actions{display:flex; align-items:center; gap:10px;}
+
+.share-toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%, 16px);
+  display:flex; align-items:center; gap:8px;
+  background:var(--panel-solid); border:1px solid var(--border-strong);
+  color:var(--ink); font-size:13.5px; font-weight:500;
+  padding:11px 18px; border-radius:12px;
+  box-shadow:0 14px 36px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  opacity:0; pointer-events:none; z-index:80;
+  transition:opacity .35s var(--ease), transform .35s var(--ease);
+}
+.share-toast.is-visible{opacity:1; transform:translate(-50%, 0); pointer-events:auto;}
+.share-toast svg{width:16px; height:16px; color:var(--success); flex:0 0 auto;}
 
 /* ============================= HERO ============================= */
 .hero{padding:76px 32px 40px;}
@@ -560,6 +575,8 @@ select.select option{background:#0f141f; color:var(--ink);}
 <symbol id="icon-satellite-dish" viewBox="0 0 24 24"><path d="M4 10a8 8 0 0 1 8-8m0 8L4 18m8-8 8 8M2 22c3-3 5-3 5-6a5 5 0 0 0-5-5c-3 0-3 2-3 3m17-9a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/></symbol>
 <symbol id="icon-scale-balanced" viewBox="0 0 24 24"><path d="M12 3v18M5 8l-3 6a3 3 0 0 0 6 0Zm14 0-3 6a3 3 0 0 0 6 0ZM3 8h6m6 0h6M8 3h8"/></symbol>
 <symbol id="icon-shield-halved" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Zm0 0V4"/></symbol>
+<symbol id="icon-share" viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm12 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8.7 10.7l6.6-3.4M8.7 13.3l6.6 3.4"/></symbol>
+<symbol id="icon-link" viewBox="0 0 24 24"><path d="M9 17H7a5 5 0 0 1 0-10h2m6 10h2a5 5 0 0 0 0-10h-2M8 12h8"/></symbol>
 <symbol id="icon-spinner" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.5-7.5-2.8 2.8M9.3 14.7l-2.8 2.8m0-11 2.8 2.8m8.4 8.4-2.8-2.8"/></symbol>
 <symbol id="icon-toolbox" viewBox="0 0 24 24"><path d="M2 13h20M6 13V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M4 13h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6ZM10 13v2h4v-2"/></symbol>
 <symbol id="icon-tower-broadcast" viewBox="0 0 24 24"><path d="M12 20v-8m0 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM5 9a7 7 0 0 1 2.7-5.5M19 9a7 7 0 0 0-2.7-5.5M2 12a10 10 0 0 1 2.3-6.4M22 12a10 10 0 0 0-2.3-6.4M8 20h8"/></symbol>
@@ -578,8 +595,12 @@ select.select option{background:#0f141f; color:var(--ink);}
     <span class="brand-badge"><svg class="icon" aria-hidden="true"><use href="#icon-satellite-dish"></use></svg></span>
     <span class="brand-word">SIGNAL <span>INTAKE</span></span>
   </div>
-  <a href="#wizard" class="btn btn-ghost btn-sm">Begin <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"></use></svg></a>
+  <div class="nav-actions">
+    <button type="button" class="btn btn-ghost btn-sm" id="shareBtn"><svg class="icon" aria-hidden="true"><use href="#icon-share"></use></svg> Share</button>
+    <a href="#wizard" class="btn btn-ghost btn-sm">Begin <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"></use></svg></a>
+  </div>
 </nav>
+<div id="shareToast" class="share-toast" role="status" aria-live="polite"></div>
 
 <header class="hero" id="top">
   <div class="hero-inner">
@@ -1491,7 +1512,17 @@ select.select option{background:#0f141f; color:var(--ink);}
   // Where responses get sent. Replace this with your deployed server's
   // submit endpoint, e.g. "https://your-server.onrender.com/api/submit"
   // ==================================================================
-  var SUBMIT_URL = "https://signal-backend-awlg.onrender.com";
+  var SUBMIT_URL = "https://signal-backend-awlg.onrender.com/api/submit";
+
+  // ==================================================================
+  // The link the Share button hands out. Leave as-is to always share
+  // whatever URL the page is currently loaded at (works automatically
+  // once this page is deployed), or hardcode a fixed/short link here,
+  // e.g. "https://tinyurl.com/your-slug".
+  // ==================================================================
+  var SHARE_URL = window.location.href;
+  var SHARE_TITLE = "Help Us Build the Next Useful Tool";
+  var SHARE_TEXT = "Got 7 minutes? Tell us what software or website should be built next.";
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -2244,6 +2275,49 @@ select.select option{background:#0f141f; color:var(--ink);}
 
   document.getElementById('resetBtn').addEventListener('click', function(){
     window.location.reload();
+  });
+
+  /* ---------------------------------------------------------------- */
+  /* Share button                                                       */
+  /* ---------------------------------------------------------------- */
+  var shareToast = document.getElementById('shareToast');
+  var shareToastTimer = null;
+
+  function showShareToast(message){
+    shareToast.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-check"></use></svg><span></span>';
+    shareToast.querySelector('span').textContent = message;
+    shareToast.classList.add('is-visible');
+    clearTimeout(shareToastTimer);
+    shareToastTimer = setTimeout(function(){
+      shareToast.classList.remove('is-visible');
+    }, 2600);
+  }
+
+  function copyShareLink(){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(SHARE_URL).then(function(){
+        showShareToast('Link copied to clipboard');
+      }).catch(function(){
+        promptShareLink();
+      });
+    } else {
+      promptShareLink();
+    }
+  }
+
+  function promptShareLink(){
+    window.prompt('Copy this link:', SHARE_URL);
+  }
+
+  document.getElementById('shareBtn').addEventListener('click', function(){
+    if (navigator.share) {
+      navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url: SHARE_URL }).catch(function(err){
+        // AbortError just means the user closed the native share sheet — not a real failure.
+        if (err && err.name !== 'AbortError') { copyShareLink(); }
+      });
+    } else {
+      copyShareLink();
+    }
   });
 
   /* ---------------------------------------------------------------- */
