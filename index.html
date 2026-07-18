@@ -130,6 +130,22 @@ button{font-family:inherit;}
 
 .reveal{opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease), transform .8s var(--ease);}
 .reveal.visible{opacity:1; transform:translateY(0);}
+.reveal-left{opacity:0; transform:translateX(-32px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
+.reveal-left.visible{opacity:1; transform:translateX(0);}
+.reveal-right{opacity:0; transform:translateX(32px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
+.reveal-right.visible{opacity:1; transform:translateX(0);}
+.reveal-scale{opacity:0; transform:scale(0.94) translateY(14px); transition:opacity .7s var(--ease), transform .7s var(--ease);}
+.reveal-scale.visible{opacity:1; transform:scale(1) translateY(0);}
+
+/* Cascading entrance for grouped cards — each child waits a little longer
+   than the last, so a grid of cards reads as a ripple instead of a single
+   flat fade. Capped at 6 children; anything beyond just uses the last delay. */
+.how-grid .reveal:nth-child(1),.why-grid .reveal:nth-child(1){transition-delay:0s;}
+.how-grid .reveal:nth-child(2),.why-grid .reveal:nth-child(2){transition-delay:.12s;}
+.how-grid .reveal:nth-child(3),.why-grid .reveal:nth-child(3){transition-delay:.24s;}
+.how-grid .reveal:nth-child(4),.why-grid .reveal:nth-child(4){transition-delay:.36s;}
+.how-grid .reveal:nth-child(5),.why-grid .reveal:nth-child(5){transition-delay:.48s;}
+.how-grid .reveal:nth-child(6),.why-grid .reveal:nth-child(6){transition-delay:.6s;}
 
 /* ============================= SCROLL PROGRESS ============================= */
 .scroll-progress{position:fixed; top:0; left:0; width:100%; height:3px; z-index:100; background:rgba(255,255,255,0.04); pointer-events:none;}
@@ -603,6 +619,62 @@ select.select option{background:#161a13; color:var(--ink);}
   .panel-nav .btn span, .panel-nav .btn{font-size:14px;}
 }
 
+/* ============================= CINEMATIC INTRO ============================= */
+.intro-overlay{
+  position:fixed; inset:0; z-index:9999;
+  background:radial-gradient(ellipse at center, var(--void-2), var(--void) 70%);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  transition:opacity .7s var(--ease), visibility 0s linear 0s;
+}
+.intro-overlay.intro-hide{opacity:0; visibility:hidden; transition:opacity .7s var(--ease), visibility 0s linear .7s; pointer-events:none;}
+
+.intro-noise{
+  position:absolute; inset:-20%;
+  background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
+  animation:introFlicker .12s steps(2) infinite;
+}
+@keyframes introFlicker{ 0%{opacity:.35;} 50%{opacity:.6;} 100%{opacity:.4;} }
+
+.intro-scanline{
+  position:absolute; left:6%; right:6%; height:2px;
+  background:linear-gradient(90deg, transparent, var(--flare), transparent);
+  box-shadow:0 0 12px 2px var(--flare);
+  animation:introScan 2.3s var(--ease) infinite;
+}
+@keyframes introScan{ 0%{top:-5%; opacity:0;} 8%{opacity:1;} 92%{opacity:1;} 100%{top:105%; opacity:0;} }
+
+.intro-content{position:relative; text-align:center; z-index:1; padding:0 20px;}
+.intro-mark{
+  width:62px; height:62px; margin:0 auto 24px;
+  border:1px solid var(--border-strong); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--flare);
+  animation:introPulse 1.6s ease-in-out infinite;
+}
+.intro-mark svg{width:26px; height:26px;}
+@keyframes introPulse{ 0%,100%{box-shadow:0 0 0 0 rgba(255,106,61,0.35);} 50%{box-shadow:0 0 0 14px rgba(255,106,61,0);} }
+
+.intro-lines{font-family:var(--font-mono); font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-muted); min-height:74px;}
+.intro-line{opacity:0; transform:translateY(6px); animation:introLineIn .5s var(--ease) forwards;}
+.intro-line + .intro-line{margin-top:9px;}
+.intro-line-1{animation-delay:.15s;}
+.intro-line-2{animation-delay:.95s;}
+.intro-line-3{animation-delay:1.85s; color:var(--dispatch); font-weight:600;}
+@keyframes introLineIn{ to{opacity:1; transform:translateY(0);} }
+
+.intro-bar{width:220px; height:2px; background:var(--border); margin:22px auto 0; overflow:hidden; border-radius:2px;}
+.intro-bar-fill{height:100%; width:0%; background:linear-gradient(90deg, var(--flare), var(--brass)); animation:introBarFill 2.2s var(--ease) forwards;}
+@keyframes introBarFill{ to{width:100%;} }
+
+.intro-skip{
+  position:absolute; bottom:26px; right:28px;
+  font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--ink-dim); background:transparent; border:1px solid var(--border); border-radius:999px;
+  padding:8px 16px; cursor:pointer; transition:color .2s, border-color .2s;
+}
+.intro-skip:hover{color:var(--ink); border-color:var(--border-strong);}
+
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
 }
@@ -654,6 +726,21 @@ select.select option{background:#161a13; color:var(--ink);}
 <symbol id="icon-user-shield" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-6 8c0-3 3-5.5 6-5.5M15 15v3c0 2 2 3 3 3.5 1-.5 3-1.5 3-3.5v-3l-3-1-3 1Z"/></symbol>
 </defs></svg>
 
+<div class="intro-overlay" id="introOverlay" aria-hidden="true">
+  <div class="intro-noise"></div>
+  <div class="intro-scanline"></div>
+  <div class="intro-content">
+    <div class="intro-mark"><svg class="icon" aria-hidden="true"><use href="#icon-satellite-dish"></use></svg></div>
+    <div class="intro-lines">
+      <div class="intro-line intro-line-1">Establishing uplink&hellip;</div>
+      <div class="intro-line intro-line-2">Scanning frequencies&hellip;</div>
+      <div class="intro-line intro-line-3">Signal acquired</div>
+    </div>
+    <div class="intro-bar"><div class="intro-bar-fill"></div></div>
+  </div>
+  <button type="button" class="intro-skip" id="introSkip">Skip intro</button>
+</div>
+
 <div class="bg-layer" aria-hidden="true">
   <div class="grid-overlay"></div>
   <div class="orb orb-cyan"></div>
@@ -676,7 +763,7 @@ select.select option{background:#161a13; color:var(--ink);}
 
 <header class="hero" id="top">
   <div class="hero-inner">
-    <div class="hero-copy reveal">
+    <div class="hero-copy reveal-left">
       <p class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#icon-circle"></use></svg> WE ARE LISTENING</p>
       <h1 class="hero-title">
         <span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#icon-satellite-dish"></use></svg></span>
@@ -694,7 +781,7 @@ select.select option{background:#161a13; color:var(--ink);}
         <span><svg class="icon" aria-hidden="true"><use href="#icon-user-shield"></use></svg> Anonymous by default</span>
       </div>
     </div>
-    <div class="hero-visual reveal">
+    <div class="hero-visual reveal-right" id="heroVisual">
       <div class="scope-panel glass">
         <div class="scope-head">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -1624,9 +1711,50 @@ select.select option{background:#161a13; color:var(--ink);}
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------------------------------------------------------------- */
+  /* Cinematic opening                                                  */
+  /* Plays once per browser tab (sessionStorage-gated) and is skipped   */
+  /* entirely if the person has "reduce motion" turned on. Locks page   */
+  /* scroll for its short duration, then hands off to the page, which  */
+  /* is already mid-reveal underneath it.                              */
+  /* ---------------------------------------------------------------- */
+  (function initIntro(){
+    var overlay = document.getElementById('introOverlay');
+    if(!overlay) return;
+    var alreadyPlayed = false;
+    try { alreadyPlayed = sessionStorage.getItem('signalIntroPlayed') === '1'; } catch(e) { /* privacy mode etc. */ }
+
+    if(reduceMotion || alreadyPlayed){
+      overlay.style.display = 'none';
+      return;
+    }
+
+    document.documentElement.style.overflow = 'hidden';
+    var dismissed = false;
+    function dismiss(){
+      if(dismissed) return;
+      dismissed = true;
+      overlay.classList.add('intro-hide');
+      document.documentElement.style.overflow = '';
+      try { sessionStorage.setItem('signalIntroPlayed', '1'); } catch(e) { /* ignore */ }
+      setTimeout(function(){ overlay.style.display = 'none'; }, 720);
+    }
+
+    var autoTimer = setTimeout(dismiss, 2500);
+    document.getElementById('introSkip').addEventListener('click', function(e){
+      e.stopPropagation();
+      clearTimeout(autoTimer);
+      dismiss();
+    });
+    overlay.addEventListener('click', function(){
+      clearTimeout(autoTimer);
+      dismiss();
+    });
+  })();
+
+  /* ---------------------------------------------------------------- */
   /* Scroll reveal                                                     */
   /* ---------------------------------------------------------------- */
-  var revealEls = document.querySelectorAll('.reveal');
+  var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
   if('IntersectionObserver' in window && !reduceMotion){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
@@ -1639,6 +1767,56 @@ select.select option{background:#161a13; color:var(--ink);}
     revealEls.forEach(function(el){ io.observe(el); });
   } else {
     revealEls.forEach(function(el){ el.classList.add('visible'); });
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Subtle hero parallax — the scope panel drifts slightly slower       */
+  /* than the page scrolls, for a bit of depth under the hero.          */
+  /* ---------------------------------------------------------------- */
+  var heroVisual = document.getElementById('heroVisual');
+  if(heroVisual && !reduceMotion){
+    var parallaxTicking = false;
+    function applyParallax(){
+      var y = window.scrollY || window.pageYOffset || 0;
+      var offset = Math.min(60, y * 0.12);
+      heroVisual.style.transform = 'translateY(' + offset + 'px)';
+      parallaxTicking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!parallaxTicking){
+        requestAnimationFrame(applyParallax);
+        parallaxTicking = true;
+      }
+    }, {passive:true});
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Lightweight page-view tracking                                    */
+  /* Fires once per load to the same backend the form submits to, so   */
+  /* traffic shows up in Render's logs and in the admin Traffic tab.   */
+  /* No cookies, no persistent visitor id — just an IP + UA snapshot.  */
+  /* ---------------------------------------------------------------- */
+  var TRACK_URL = "https://signal-backend-awlg.onrender.com/api/track";
+  function track(eventName){
+    try {
+      fetch(TRACK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          path: window.location.pathname,
+          referrer: document.referrer || '',
+          event: eventName || 'pageview'
+        })
+      }).catch(function(){ /* tracking is best-effort; never block the page on it */ });
+    } catch(e) { /* ignore */ }
+  }
+  track('pageview');
+  var trackedWizardStart = false;
+  function trackWizardStartOnce(){
+    if(trackedWizardStart) return;
+    trackedWizardStart = true;
+    track('wizard_start');
   }
 
   /* ---------------------------------------------------------------- */
@@ -1758,6 +1936,7 @@ select.select option{background:#161a13; color:var(--ink);}
 
   function goTo(i){
     if(i < 0 || i >= panels.length) return;
+    if(i > 0){ trackWizardStartOnce(); }
     panels[currentIndex].classList.remove('active', 'enter');
     currentIndex = i;
     var p = panels[currentIndex];
@@ -2359,6 +2538,7 @@ select.select option{background:#161a13; color:var(--ink);}
         ('SIG-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.floor(Math.random()*90+10));
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalHtml;
+      track('wizard_submit');
       showSuccess(refCode);
     })
     .catch(function(err){
