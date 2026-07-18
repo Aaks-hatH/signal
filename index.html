@@ -668,7 +668,7 @@ select.select option{background:#161a13; color:var(--ink);}
   </div>
   <div class="nav-actions">
     <button type="button" class="btn btn-ghost btn-sm" id="shareBtn"><svg class="icon" aria-hidden="true"><use href="#icon-share"></use></svg> Share</button>
-    <a href="#wizard" class="btn btn-ghost btn-sm">Begin <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"></use></svg></a>
+    <a href="#wizard" class="btn btn-ghost btn-sm">Start <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"></use></svg></a>
   </div>
 </nav>
 <div id="shareToast" class="share-toast" role="status" aria-live="polite"></div>
@@ -677,15 +677,15 @@ select.select option{background:#161a13; color:var(--ink);}
 <header class="hero" id="top">
   <div class="hero-inner">
     <div class="hero-copy reveal">
-      <p class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#icon-circle"></use></svg> PUBLIC SIGNAL INTAKE / CHANNEL OPEN</p>
+      <p class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#icon-circle"></use></svg> WE ARE LISTENING</p>
       <h1 class="hero-title">
         <span class="title-icon"><svg class="icon" aria-hidden="true"><use href="#icon-satellite-dish"></use></svg></span>
-        Help Us Build the Next Useful Tool
+        Tell Us What Software or Website You Wish Existed
       </h1>
-      <p class="hero-lead">Every meaningful product starts as an annoyance someone finally decided to describe out loud.</p>
-      <p class="hero-desc">This isn't a suggestion box. It's an adaptive intake that branches around your answers. Tell us who you are and what's broken, and the questions that follow reshape themselves around your problem. About seven minutes. No pitch, no sign-up, no catch.</p>
+      <p class="hero-lead">This page is a short survey. Its purpose is simple: we want to hear about a problem in your daily life, so we can build a tool that actually fixes it.</p>
+      <p class="hero-desc">You will answer a series of questions about one problem you deal with. Each question explains why we are asking it. Some later questions will change slightly depending on what you answered earlier, that is normal. It takes about seven minutes, you do not need to create an account, and we are not selling anything.</p>
       <div class="hero-actions">
-        <a href="#wizard" class="btn btn-primary btn-lg">Begin Transmission <svg class="icon" aria-hidden="true"><use href="#icon-tower-broadcast"></use></svg></a>
+        <a href="#wizard" class="btn btn-primary btn-lg">Start the Survey <svg class="icon" aria-hidden="true"><use href="#icon-tower-broadcast"></use></svg></a>
         <a href="#how" class="btn btn-ghost btn-lg">See how it works</a>
       </div>
       <div class="hero-meta">
@@ -724,20 +724,20 @@ select.select option{background:#161a13; color:var(--ink);}
     <div class="how-card glass reveal">
       <span class="how-index">01</span>
       <svg class="icon how-icon" aria-hidden="true"><use href="#icon-tower-broadcast"></use></svg>
-      <h3>Share the signal</h3>
-      <p>Describe the problem in your own words. No technical framing required, just the friction as you feel it.</p>
+      <h3>Tell us the problem</h3>
+      <p>Describe the problem in your own words. You do not need to know anything technical, just explain what is frustrating you.</p>
     </div>
     <div class="how-card glass reveal">
       <span class="how-index">02</span>
       <svg class="icon how-icon" aria-hidden="true"><use href="#icon-crosshairs"></use></svg>
-      <h3>We triangulate</h3>
-      <p>Patterns across every response get weighed against what's actually practical and buildable.</p>
+      <h3>We look for patterns</h3>
+      <p>We compare your answer with everyone else's answers, so we can see which problems come up again and again.</p>
     </div>
     <div class="how-card glass reveal">
       <span class="how-index">03</span>
       <svg class="icon how-icon" aria-hidden="true"><use href="#icon-code"></use></svg>
-      <h3>We ship</h3>
-      <p>The strongest signal becomes a real roadmap item, not a research report that sits in a drawer.</p>
+      <h3>We build it</h3>
+      <p>The problems that matter most get turned into a real, working tool, not just written down and forgotten.</p>
     </div>
   </div>
 </section>
@@ -779,11 +779,13 @@ select.select option{background:#161a13; color:var(--ink);}
             <div class="field">
               <div class="field-label"><label for="f-name">What should we call you?</label><span class="field-optional">Optional</span></div>
               <input class="input" type="text" id="f-name" name="name" placeholder="First name or a handle is fine">
+              <p class="field-hint">This is just so we can address you like a person if we ever write back. Leave it blank and we will simply say "thank you."</p>
             </div>
 
             <div class="field">
               <div class="field-label"><label for="f-email">Email</label><span class="field-optional">Optional for now</span></div>
               <input class="input" type="email" id="f-email" name="email" placeholder="you@domain.com">
+              <p class="field-hint">We only use this to send you a copy of your answers or to follow up about this specific problem, if you want that. It is never sold or added to a mailing list.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>That doesn't look like a valid email.</span></div>
             </div>
 
@@ -800,6 +802,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <option value="60plus">60+</option>
                 </select>
               </div>
+              <p class="field-hint">This is not for marketing. Different age groups run into different problems, so this helps us understand who is telling us about this one.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick the range that fits you.</span></div>
             </div>
 
@@ -816,6 +819,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <option value="other">Other</option>
                 </select>
               </div>
+              <p class="field-hint">Different kinds of people run into different problems. Knowing whether you are a student, a developer, or an everyday user helps us understand where this problem is coming from.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick the option closest to you.</span></div>
               <div class="conditional" id="cond-role-other">
                 <input class="input" type="text" id="f-role-other" name="roleOther" placeholder="Tell us a bit more">
@@ -868,6 +872,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <input class="card-select-input" type="radio" name="category" id="cat-other" value="other">
                 <label class="card-select-card" for="cat-other"><svg class="icon" aria-hidden="true"><use href="#icon-ellipsis"></use></svg><span>Something else entirely</span></label>
               </div>
+              <p class="field-hint">This sorts your problem into the right group, so we can compare it with similar problems other people describe, instead of comparing it to something unrelated.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Choose the closest fit.</span></div>
               <div class="conditional" id="cond-category-other">
                 <input class="input" type="text" id="f-category-other" name="categoryOther" placeholder="Describe the category">
@@ -877,6 +882,7 @@ select.select option{background:#161a13; color:var(--ink);}
             <div class="field">
               <div class="field-label"><label for="f-problem-desc">Describe the problem in a sentence or two</label></div>
               <textarea class="textarea" id="f-problem-desc" name="problemDescription" required placeholder="As if you were explaining it to a friend who's never run into it..."></textarea>
+              <p class="field-hint">Write this the way you would explain it out loud to a friend. There is no wrong way to describe it, and it does not need to sound technical.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Give us at least a sentence to work with.</span></div>
             </div>
 
@@ -908,6 +914,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <input class="seg-input" type="radio" name="severity" id="sev-costly" value="costly"><label class="seg-label" for="sev-costly">Actively costing me time or money</label>
                 <input class="seg-input" type="radio" name="severity" id="sev-unbearable" value="unbearable"><label class="seg-label" for="sev-unbearable">Borderline unbearable</label>
               </div>
+              <p class="field-hint">This tells us how much this problem actually bothers you, so we do not treat a small annoyance the same as something that is really hurting you.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Give us a sense of how severe this is.</span></div>
             </div>
 
@@ -923,6 +930,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <option value="unsure">Hard to say</option>
                 </select>
               </div>
+              <p class="field-hint">This turns "annoying" into a number. A problem that costs you 5 or more hours a week gets worked on very differently than one that costs you 10 minutes.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick your closest estimate.</span></div>
             </div>
 
@@ -944,7 +952,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <h3>How often does this get in your way?</h3>
               </div>
             </div>
-            <p class="panel-desc">Frequency tells us how sharp the edge really is.</p>
+            <p class="panel-desc">This tells us whether the problem happens all the time or only once in a while. A problem you hit every day matters more to fix quickly than one you hit once a year.</p>
 
             <div class="field">
               <div class="field-label"><label>Pick the closest match</label></div>
@@ -986,6 +994,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <input class="seg-input" type="radio" name="currentSolution" id="cur-existing" value="existing"><label class="seg-label" for="cur-existing">An existing app or tool</label>
                 <input class="seg-input" type="radio" name="currentSolution" id="cur-workaround" value="workaround"><label class="seg-label" for="cur-workaround">A workaround combining several tools</label>
               </div>
+              <p class="field-hint">This tells us if you already have something you use for this, or if you just put up with the problem. Either answer is useful to us.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Tell us what you currently rely on.</span></div>
               <div class="conditional" id="cond-current-detail">
                 <input class="input" type="text" id="f-current-detail" name="currentDetail" placeholder="Which tools or apps, specifically?">
@@ -1004,6 +1013,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 </div>
               </div>
               <div class="rating-scale-labels"><span>Barely works</span><span>Works great</span></div>
+              <p class="field-hint">If you picked "nothing" above, rate how well going without a solution is working out for you. That is still useful for us to know.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Give it a rating from 1 to 5.</span></div>
             </div>
 
@@ -1030,6 +1040,7 @@ select.select option{background:#161a13; color:var(--ink);}
             <div class="field">
               <div class="field-label"><label for="f-tried">What else have you tried, if anything, before ending up here?</label><span class="field-optional">Optional</span></div>
               <textarea class="textarea" id="f-tried" name="triedAlternatives" placeholder="Any apps, tools, or approaches you've tried and abandoned..."></textarea>
+              <p class="field-hint">If you have already tried an app or a trick for this and it did not stick, tell us about it. It is completely fine to leave this blank.</p>
             </div>
 
             <div class="conditional" id="cond-why-stopped">
@@ -1045,7 +1056,8 @@ select.select option{background:#161a13; color:var(--ink);}
                     <option value="stillusing">Actually still using it, just not fully happy</option>
                   </select>
                 </div>
-                <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick the closest reason.</span></div>
+                <p class="field-hint">This tells us what went wrong with what you already tried, so a new tool does not make the same mistake.</p>
+              <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick the closest reason.</span></div>
               </div>
             </div>
 
@@ -1067,7 +1079,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <h3>What frustrates you most about it?</h3>
               </div>
             </div>
-            <p class="panel-desc">Pick every tag that applies, then add anything specific below.</p>
+            <p class="panel-desc">Pick every tag that applies, then add anything specific below. We count these up across everyone who answers, so the tags picked most often tell us exactly which part to fix first.</p>
 
             <div class="field">
               <div class="chip-grid" id="frustration-chips">
@@ -1090,6 +1102,7 @@ select.select option{background:#161a13; color:var(--ink);}
             <div class="field">
               <div class="field-label"><label for="f-frustration-text">Anything else that drives you up the wall?</label><span class="field-optional">Optional</span></div>
               <textarea class="textarea" id="f-frustration-text" name="frustrationText" placeholder="Specifics help: what exactly happens?"></textarea>
+              <p class="field-hint">Use this box for anything specific the tags above did not quite cover.</p>
             </div>
 
             <div class="panel-nav">
@@ -1111,7 +1124,7 @@ select.select option{background:#161a13; color:var(--ink);}
               </div>
             </div>
             <span class="category-flag" id="category-flag"><svg class="icon" aria-hidden="true"><use href="#icon-circle"></use></svg> <span id="category-flag-text">General</span></span>
-            <p class="panel-desc">Everything below is optional, but the more specific you are, the more useful your signal becomes.</p>
+            <p class="panel-desc">Everything below is optional, but the more detail you give, the more precisely we can build the right thing. These questions change based on the category you picked earlier.</p>
 
             <div class="subblock" data-sub="productivity">
               <div class="field">
@@ -1279,12 +1292,14 @@ select.select option{background:#161a13; color:var(--ink);}
             <div class="field">
               <div class="field-label"><label for="f-ideal">If this problem vanished tomorrow, what did the solution do to make that happen?</label></div>
               <textarea class="textarea" id="f-ideal" name="idealDescription" required placeholder="Walk us through it, step by step if that helps..."></textarea>
+              <p class="field-hint">Describe the perfect fix, even if it sounds unrealistic. Do not worry about whether it is possible to build. That is our problem to figure out, not yours.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Tell us at least a little about what it would do.</span></div>
             </div>
 
             <div class="field">
               <div class="field-label"><label for="f-musthave">One feature it absolutely cannot ship without</label><span class="field-optional">Optional</span></div>
               <input class="input" type="text" id="f-musthave" name="mustHave" placeholder="The one non-negotiable">
+              <p class="field-hint">If we could only build one part of this correctly, which part would that be? This tells us what to protect if we ever have to cut corners elsewhere.</p>
             </div>
 
             <div class="field">
@@ -1296,6 +1311,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <input class="seg-input" type="radio" name="platformPref" id="plat-desktop" value="desktop"><label class="seg-label" for="plat-desktop">A desktop app</label>
                 <input class="seg-input" type="radio" name="platformPref" id="plat-any" value="any"><label class="seg-label" for="plat-any">Doesn't matter</label>
               </div>
+              <p class="field-hint">This tells us what to actually build: a website you open in a browser, an app on your phone, or something else.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick where it should live.</span></div>
             </div>
 
@@ -1317,7 +1333,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <h3>What matters most in the build?</h3>
               </div>
             </div>
-            <p class="panel-desc">Pick up to three priorities. Forcing a ranking tells us more than checking everything would.</p>
+            <p class="panel-desc">Choose up to three things that matter most to you. On purpose, you cannot pick them all. Choosing only a few tells us far more than checking every box would.</p>
 
             <div class="field">
               <div class="field-label"><label>Your top priorities</label><span class="field-count" id="priority-count">0 / 3 selected</span></div>
@@ -1362,6 +1378,7 @@ select.select option{background:#161a13; color:var(--ink);}
                 <input class="seg-input" type="radio" name="wouldUse" id="use-unsure" value="unsure"><label class="seg-label" for="use-unsure">Not sure</label>
                 <input class="seg-input" type="radio" name="wouldUse" id="use-no" value="no"><label class="seg-label" for="use-no">Probably not</label>
               </div>
+              <p class="field-hint">Please be honest here, even if the honest answer is "probably not." That tells us just as much as an enthusiastic yes does.</p>
               <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Let us know where you land.</span></div>
             </div>
 
@@ -1374,6 +1391,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <input class="seg-input" type="radio" name="wouldPay" id="pay-freemium" value="freemium"><label class="seg-label" for="pay-freemium">Only if there's a free option</label>
                   <input class="seg-input" type="radio" name="wouldPay" id="pay-free" value="free"><label class="seg-label" for="pay-free">No, I'd need it free</label>
                 </div>
+                <p class="field-hint">This tells us whether this needs to stay free to use, or whether it is worth charging for.</p>
                 <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick the option closest to how you feel.</span></div>
               </div>
 
@@ -1389,6 +1407,7 @@ select.select option{background:#161a13; color:var(--ink);}
                       <option value="40plus">$40+</option>
                     </select>
                   </div>
+                  <p class="field-hint">A real number here is more useful to us than "whatever it's worth." It tells us whether this needs to stay free or could reasonably be something you pay for.</p>
                   <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Pick a range that feels right.</span></div>
                 </div>
               </div>
@@ -1400,6 +1419,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <input class="seg-input" type="radio" name="urgency" id="urg-month" value="month"><label class="seg-label" for="urg-month">Within a month or two</label>
                   <input class="seg-input" type="radio" name="urgency" id="urg-whenever" value="whenever"><label class="seg-label" for="urg-whenever">Whenever it's ready</label>
                 </div>
+                <p class="field-hint">This is different from how severe the problem is. A problem can be painful but not urgent, or small but time-sensitive. Both help us decide what to build first.</p>
                 <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Let us know your timeline.</span></div>
               </div>
             </div>
@@ -1446,6 +1466,7 @@ select.select option{background:#161a13; color:var(--ink);}
                   <span>Only if we want to go deeper on this specific idea.</span>
                 </div>
               </label>
+              <p class="field-hint">Turn this on only if you would not mind a short follow-up message about this specific problem. Leave it off to stay completely anonymous.</p>
             </div>
 
             <div class="panel-nav">
@@ -1479,16 +1500,19 @@ select.select option{background:#161a13; color:var(--ink);}
                     <option value="either">Either works</option>
                   </select>
                 </div>
+                <p class="field-hint">Pick email or phone, whichever you actually check regularly.</p>
                 <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>Let us know how to reach you.</span></div>
               </div>
               <div class="field">
                 <div class="field-label"><label for="f-contact-value">Your contact details</label></div>
                 <input class="input" type="text" id="f-contact-value" name="contactValue" placeholder="Email address or phone number">
+                <p class="field-hint">Give the email address or phone number that matches what you chose above.</p>
                 <div class="field-error"><svg class="icon" aria-hidden="true"><use href="#icon-circle-exclamation"></use></svg><span>We'll need something to reach you at.</span></div>
               </div>
               <div class="field">
                 <div class="field-label"><label for="f-contact-time">Best time to reach out</label><span class="field-optional">Optional</span></div>
                 <input class="input" type="text" id="f-contact-time" name="bestTime" placeholder="e.g. weekday afternoons">
+                <p class="field-hint">This just helps us avoid reaching out at a bad time. Feel free to leave it blank.</p>
               </div>
               <div class="conditional" id="cond-beta">
                 <div class="field">
@@ -1564,6 +1588,7 @@ select.select option{background:#161a13; color:var(--ink);}
           <p class="copy2" id="successCopy2"></p>
           <div class="success-actions">
             <button type="button" class="btn btn-primary" id="resetBtn">Submit another response <svg class="icon" aria-hidden="true"><use href="#icon-rotate-right"></use></svg></button>
+            <button type="button" class="btn btn-ghost" id="successShareBtn"><svg class="icon" aria-hidden="true"><use href="#icon-share"></use></svg> Know someone with a similar problem? Share this</button>
             <a href="#top" class="btn btn-ghost">Back to top</a>
           </div>
         </div>
@@ -2391,6 +2416,19 @@ select.select option{background:#161a13; color:var(--ink);}
       copyShareLink();
     }
   });
+
+  var successShareBtn = document.getElementById('successShareBtn');
+  if(successShareBtn){
+    successShareBtn.addEventListener('click', function(){
+      if (navigator.share) {
+        navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url: SHARE_URL }).catch(function(err){
+          if (err && err.name !== 'AbortError') { copyShareLink(); }
+        });
+      } else {
+        copyShareLink();
+      }
+    });
+  }
 
   /* ---------------------------------------------------------------- */
   /* Page scroll progress                                               */
