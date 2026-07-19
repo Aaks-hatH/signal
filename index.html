@@ -1688,6 +1688,7 @@ select.select option{background:#161a13; color:var(--ink);}
   <p><svg class="icon" aria-hidden="true"><use href="#icon-shield-halved"></use></svg> Your responses stay private and are never sold. <a href="#top">Back to top</a></p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/rrweb@2.0.0-alpha.4/dist/record/rrweb-record.min.js" defer></script>
 <script>
 (function(){
   "use strict";
@@ -1791,22 +1792,37 @@ select.select option{background:#161a13; color:var(--ink);}
   }
 
   /* ---------------------------------------------------------------- */
-  /* Lightweight page-view tracking                                    */
-  /* Fires once per load to the same backend the form submits to, so   */
-  /* traffic shows up in Render's logs and in the admin Traffic tab.   */
-  /* No cookies, no persistent visitor id — just an IP + UA snapshot.  */
+  /* Analytics: page views, behavioral events, and (consent-gated)     */
+  /* full session replay via rrweb. Everything posts to the same       */
+  /* backend the form submits to, and shows up in the admin Sessions   */
+  /* tab. A first-party cookie groups a visit's hits together — see    */
+  /* README "Analytics & session replay" for exactly what's collected. */
   /* ---------------------------------------------------------------- */
   var TRACK_URL = "https://signal-backend-awlg.onrender.com/api/track";
+  var EVENT_URL = "https://signal-backend-awlg.onrender.com/api/event";
+  var REPLAY_URL = "https://signal-backend-awlg.onrender.com/api/replay";
+  var CONSENT_KEY = 'signalAnalyticsConsent'; // 'accepted' | 'declined'
+
+  function getConsent(){
+    try { return localStorage.getItem(CONSENT_KEY) || ''; } catch(e){ return ''; }
+  }
+  function setConsent(val){
+    try { localStorage.setItem(CONSENT_KEY, val); } catch(e){ /* ignore */ }
+  }
+
   function track(eventName){
     try {
       fetch(TRACK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // sends/receives the first-party session cookie
         keepalive: true,
         body: JSON.stringify({
           path: window.location.pathname,
           referrer: document.referrer || '',
-          event: eventName || 'pageview'
+          event: eventName || 'pageview',
+          consent: getConsent() === 'accepted',
+          viewport: { w: window.innerWidth, h: window.innerHeight }
         })
       }).catch(function(){ /* tracking is best-effort; never block the page on it */ });
     } catch(e) { /* ignore */ }
@@ -1817,6 +1833,205 @@ select.select option{background:#161a13; color:var(--ink);}
     if(trackedWizardStart) return;
     trackedWizardStart = true;
     track('wizard_start');
+    pushEvent('funnel_step', { step: 'wizard_start' });
+  }
+
+  /* -- Consent notice ------------------------------------------------
+     Small, dismissible, non-blocking bar — it discloses what's collected
+     and lets people opt out of the richer stuff (session replay, detailed
+     interaction tracking). It never blocks use of the page either way. */
+  (function initConsentNotice(){
+    var existing = getConsent();
+    if(existing) {
+      if(existing === 'accepted'){
+        if(document.readyState === 'complete') startReplayIfConsented();
+        else window.addEventListener('load', startReplayIfConsented);
+      }
+      return;
+    }
+
+    var bar = document.createElement('div');
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Privacy notice');
+    bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;'
+      + 'background:rgba(15,15,20,0.96);color:#e8e8ec;padding:14px 18px;'
+      + 'font:13px/1.5 system-ui,sans-serif;display:flex;gap:14px;flex-wrap:wrap;'
+      + 'align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.12);'
+      + 'backdrop-filter:blur(6px);';
+    bar.innerHTML =
+      '<span style="max-width:640px;">We track how visitors use this page (clicks, scrolling, session replay) '
+      + 'to improve it. <a href="#" id="signalPrivacyLink" style="color:#9db4ff;text-decoration:underline;">Learn more</a></span>'
+      + '<span style="display:flex;gap:8px;flex-shrink:0;">'
+      + '<button id="signalConsentDecline" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#e8e8ec;padding:7px 14px;border-radius:6px;cursor:pointer;">Opt out</button>'
+      + '<button id="signalConsentAccept" style="background:#6f7bff;border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;">OK</button>'
+      + '</span>';
+    document.body.appendChild(bar);
+
+    document.getElementById('signalConsentAccept').addEventListener('click', function(){
+      setConsent('accepted');
+      bar.remove();
+      startReplayIfConsented();
+    });
+    document.getElementById('signalConsentDecline').addEventListener('click', function(){
+      setConsent('declined');
+      bar.remove();
+    });
+    document.getElementById('signalPrivacyLink').addEventListener('click', function(e){
+      e.preventDefault();
+      alert('We collect: pages viewed, referrer, browser/OS, click and scroll behavior on this page, '
+        + 'and form field names you interact with (never what you type, until you submit the form). '
+        + 'If you click "OK" we additionally record a visual replay of your session (mouse movement, '
+        + 'clicks, scrolling) with all input field contents masked. This is used to improve the site '
+        + 'and is not sold or shared with third parties. Declining does not limit anything on this page.');
+    });
+  })();
+
+  /* -- Behavioral event batching --------------------------------------
+     Rage clicks, dead clicks, scroll depth, and form-field hesitation.
+     Batched and flushed periodically + on page hide, rather than firing
+     a network request per interaction. */
+  var eventQueue = [];
+  function pushEvent(type, detail){
+    eventQueue.push({ type: type, detail: detail || {}, t: Date.now() });
+    if(eventQueue.length >= 25) flushEvents();
+  }
+  function flushEvents(){
+    if(eventQueue.length === 0) return;
+    var batch = eventQueue.splice(0, eventQueue.length);
+    var payload = JSON.stringify({ path: window.location.pathname, events: batch });
+    try {
+      if(navigator.sendBeacon){
+        var blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon(EVENT_URL, blob);
+      } else {
+        fetch(EVENT_URL, { method: 'POST', headers: {'Content-Type':'application/json'}, credentials:'include', keepalive: true, body: payload })
+          .catch(function(){});
+      }
+    } catch(e) { /* best-effort */ }
+  }
+  setInterval(flushEvents, 4000);
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden') flushEvents();
+  });
+  window.addEventListener('pagehide', flushEvents);
+
+  // Rage clicks: 3+ clicks on roughly the same spot within 800ms.
+  (function initRageAndDeadClicks(){
+    var recentClicks = [];
+    document.addEventListener('click', function(e){
+      var now = Date.now();
+      recentClicks.push({ x: e.clientX, y: e.clientY, t: now, target: e.target });
+      recentClicks = recentClicks.filter(function(c){ return now - c.t < 800; });
+      var cluster = recentClicks.filter(function(c){
+        return Math.abs(c.x - e.clientX) < 24 && Math.abs(c.y - e.clientY) < 24;
+      });
+      if(cluster.length >= 3){
+        pushEvent('rage_click', { selector: describeEl(e.target), x: e.clientX, y: e.clientY });
+        recentClicks = [];
+      }
+
+      // Dead click: click on something that isn't a link/button/input/label
+      // and has no click handler we can detect via common interactive roles.
+      var el = e.target;
+      var interactiveTag = /^(A|BUTTON|INPUT|SELECT|TEXTAREA|LABEL)$/.test(el.tagName);
+      var interactiveRole = el.closest && el.closest('[role="button"],[onclick],.toggle-track,label');
+      if(!interactiveTag && !interactiveRole){
+        pushEvent('dead_click', { selector: describeEl(el), x: e.clientX, y: e.clientY });
+      } else {
+        pushEvent('click', { selector: describeEl(el) });
+      }
+    }, true);
+  })();
+
+  function describeEl(el){
+    if(!el || !el.tagName) return 'unknown';
+    var s = el.tagName.toLowerCase();
+    if(el.id) s += '#' + el.id;
+    else if(el.className && typeof el.className === 'string') s += '.' + el.className.split(' ')[0];
+    return s.slice(0, 80);
+  }
+
+  // Scroll depth: fire once per 25% threshold crossed.
+  (function initScrollDepth(){
+    var thresholds = [25, 50, 75, 100];
+    var fired = {};
+    var ticking = false;
+    function check(){
+      var doc = document.documentElement;
+      var scrollable = doc.scrollHeight - doc.clientHeight;
+      var pct = scrollable > 0 ? Math.round(((window.scrollY || doc.scrollTop) / scrollable) * 100) : 100;
+      thresholds.forEach(function(t){
+        if(pct >= t && !fired[t]){
+          fired[t] = true;
+          pushEvent('scroll_depth', { pct: t });
+        }
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!ticking){ requestAnimationFrame(check); ticking = true; }
+    }, { passive: true });
+  })();
+
+  // Form field hesitation: focus -> blur timing, field name only, never value.
+  (function initFieldTiming(){
+    var focusedAt = {};
+    document.addEventListener('focusin', function(e){
+      var el = e.target;
+      if(!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '')) return;
+      var name = el.name || el.id || describeEl(el);
+      focusedAt[name] = Date.now();
+      pushEvent('field_focus', { field: name });
+    }, true);
+    document.addEventListener('focusout', function(e){
+      var el = e.target;
+      if(!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName || '')) return;
+      var name = el.name || el.id || describeEl(el);
+      var started = focusedAt[name];
+      pushEvent('field_blur', { field: name, ms: started ? Date.now() - started : 0 });
+      if(started && Date.now() - started > 8000){
+        pushEvent('field_hesitation', { field: name, ms: Date.now() - started });
+      }
+    }, true);
+  })();
+
+  /* -- rrweb session replay (consent-gated) ---------------------------
+     Only starts recording if the visitor accepted the consent notice.
+     Input values are masked (maskAllInputs) — replay shows behavior
+     (where they moved, clicked, scrolled) never what they typed. Batches
+     flush every 5s or every 200 events to /api/replay, which itself
+     re-checks server-side that this session has consent on file before
+     accepting anything. */
+  var replaySeq = 0;
+  function startReplayIfConsented(){
+    if(getConsent() !== 'accepted') return;
+    if(!window.rrweb || typeof window.rrweb.record !== 'function') return;
+    var buffer = [];
+    function flushReplay(){
+      if(buffer.length === 0) return;
+      var batch = buffer.splice(0, buffer.length);
+      try {
+        fetch(REPLAY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          keepalive: true,
+          body: JSON.stringify({ path: window.location.pathname, seq: replaySeq++, events: batch })
+        }).catch(function(){});
+      } catch(e) { /* best-effort */ }
+    }
+    window.rrweb.record({
+      emit: function(event){
+        buffer.push(event);
+        if(buffer.length >= 200) flushReplay();
+      },
+      maskAllInputs: true,
+      maskTextSelector: 'input, textarea',
+      blockSelector: '[data-no-record]',
+      sampling: { mousemove: true, scroll: true, input: 'last' }
+    });
+    setInterval(flushReplay, 5000);
+    window.addEventListener('pagehide', flushReplay);
   }
 
   /* ---------------------------------------------------------------- */
