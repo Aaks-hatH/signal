@@ -1801,18 +1801,11 @@ select.select option{background:#161a13; color:var(--ink);}
   var TRACK_URL = "https://signal-backend-awlg.onrender.com/api/track";
   var EVENT_URL = "https://signal-backend-awlg.onrender.com/api/event";
   var REPLAY_URL = "https://signal-backend-awlg.onrender.com/api/replay";
-  var CONSENT_KEY = 'signalAnalyticsConsent'; // 'accepted' | 'declined'
-
-  function getConsent(){
-    try { return localStorage.getItem(CONSENT_KEY) || ''; } catch(e){ return ''; }
-  }
-  function setConsent(val){
-    try { localStorage.setItem(CONSENT_KEY, val); } catch(e){ /* ignore */ }
-  }
+  var NOTICE_SEEN_KEY = 'signalPrivacyNoticeSeen'; // whether the disclosure banner has been dismissed
 
   function track(eventName){
     try {
-      fetch(TRACK_URL, {
+      return fetch(TRACK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // sends/receives the first-party session cookie
@@ -1821,13 +1814,18 @@ select.select option{background:#161a13; color:var(--ink);}
           path: window.location.pathname,
           referrer: document.referrer || '',
           event: eventName || 'pageview',
-          consent: getConsent() === 'accepted',
+          // Tracking/replay is covered under our Terms of Service for anyone
+          // using this tool — not consumer-facing, not GDPR scope. Always true.
+          consent: true,
           viewport: { w: window.innerWidth, h: window.innerHeight }
         })
       }).catch(function(){ /* tracking is best-effort; never block the page on it */ });
-    } catch(e) { /* ignore */ }
+    } catch(e) { return Promise.resolve(); }
   }
-  track('pageview');
+  // Chain replay start off the pageview call's completion, not off a banner
+  // click — this is what guarantees the server has consentGiven=true on the
+  // session BEFORE any replay chunk arrives, instead of racing it.
+  var pageviewSent = track('pageview');
   var trackedWizardStart = false;
   function trackWizardStartOnce(){
     if(trackedWizardStart) return;
@@ -1836,19 +1834,19 @@ select.select option{background:#161a13; color:var(--ink);}
     pushEvent('funnel_step', { step: 'wizard_start' });
   }
 
-  /* -- Consent notice ------------------------------------------------
-     Small, dismissible, non-blocking bar — it discloses what's collected
-     and lets people opt out of the richer stuff (session replay, detailed
-     interaction tracking). It never blocks use of the page either way. */
-  (function initConsentNotice(){
-    var existing = getConsent();
-    if(existing) {
-      if(existing === 'accepted'){
-        if(document.readyState === 'complete') startReplayIfConsented();
-        else window.addEventListener('load', startReplayIfConsented);
-      }
-      return;
-    }
+  /* -- Privacy notice --------------------------------------------------
+     Acknowledgment-only, not a gate. Tracking, behavioral events, and
+     session replay are always on for anyone using this tool (disclosed
+     here and covered by our Terms of Service). The banner shows once,
+     has a single "Got it" button, and there is no decline/opt-out path —
+     dismissing it only stops it from showing again, it doesn't toggle
+     anything. */
+  (function initPrivacyNotice(){
+    pageviewSent.then(startReplay);
+
+    var seen = false;
+    try { seen = localStorage.getItem(NOTICE_SEEN_KEY) === '1'; } catch(e){}
+    if(seen) return;
 
     var bar = document.createElement('div');
     bar.setAttribute('role', 'region');
@@ -1859,30 +1857,23 @@ select.select option{background:#161a13; color:var(--ink);}
       + 'align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.12);'
       + 'backdrop-filter:blur(6px);';
     bar.innerHTML =
-      '<span style="max-width:640px;">We track how visitors use this page (clicks, scrolling, session replay) '
-      + 'to improve it. <a href="#" id="signalPrivacyLink" style="color:#9db4ff;text-decoration:underline;">Learn more</a></span>'
+      '<span style="max-width:640px;">We track how you use this page (clicks, scrolling, session replay) '
+      + 'as part of our Terms of Service. <a href="#" id="signalPrivacyLink" style="color:#9db4ff;text-decoration:underline;">Learn more</a></span>'
       + '<span style="display:flex;gap:8px;flex-shrink:0;">'
-      + '<button id="signalConsentDecline" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#e8e8ec;padding:7px 14px;border-radius:6px;cursor:pointer;">Opt out</button>'
-      + '<button id="signalConsentAccept" style="background:#6f7bff;border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;">OK</button>'
+      + '<button id="signalNoticeAck" style="background:#6f7bff;border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;">Got it</button>'
       + '</span>';
     document.body.appendChild(bar);
 
-    document.getElementById('signalConsentAccept').addEventListener('click', function(){
-      setConsent('accepted');
-      bar.remove();
-      startReplayIfConsented();
-    });
-    document.getElementById('signalConsentDecline').addEventListener('click', function(){
-      setConsent('declined');
+    document.getElementById('signalNoticeAck').addEventListener('click', function(){
+      try { localStorage.setItem(NOTICE_SEEN_KEY, '1'); } catch(e){}
       bar.remove();
     });
     document.getElementById('signalPrivacyLink').addEventListener('click', function(e){
       e.preventDefault();
       alert('We collect: pages viewed, referrer, browser/OS, click and scroll behavior on this page, '
-        + 'and form field names you interact with (never what you type, until you submit the form). '
-        + 'If you click "OK" we additionally record a visual replay of your session (mouse movement, '
-        + 'clicks, scrolling) with all input field contents masked. This is used to improve the site '
-        + 'and is not sold or shared with third parties. Declining does not limit anything on this page.');
+        + 'form field names you interact with (never what you type, until you submit the form), and a '
+        + 'visual session replay (mouse movement, clicks, scrolling) with all input field contents masked. '
+        + 'This is covered under our Terms of Service for anyone using this tool.');
     });
   })();
 
@@ -2003,8 +1994,7 @@ select.select option{background:#161a13; color:var(--ink);}
      re-checks server-side that this session has consent on file before
      accepting anything. */
   var replaySeq = 0;
-  function startReplayIfConsented(){
-    if(getConsent() !== 'accepted') return;
+  function startReplay(){
     if(!window.rrweb || typeof window.rrweb.record !== 'function') return;
     var buffer = [];
     function flushReplay(){
